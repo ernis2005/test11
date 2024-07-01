@@ -1,0 +1,13 @@
+.Haeder {
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+  padding-left: var(--p);
+  padding-right: var(--p);
+  display: flex;
+  justify-content: space-between;
+  img {
+    width: 150px;
+    height: 60px;
+  }
+  align-items: center;
+}

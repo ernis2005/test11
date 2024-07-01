@@ -1,0 +1,34 @@
+.page {
+  max-width: var(--maxWidth);
+  margin: 0 auto;
+  padding-left: var(--p);
+  padding-right: var(--p);
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+
+  .Cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+  }
+  .BlockButtonList {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .FilterLimitList {
+    display: flex;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    li {
+      cursor: pointer;
+      padding: 5px 10px;
+      border: 1px solid #000;
+      border-radius: 5px;
+      list-style: none;
+    }
+  }
+}
