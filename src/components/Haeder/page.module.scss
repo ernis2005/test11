@@ -11,3 +11,18 @@
   }
   align-items: center;
 }
+
+.Search {
+  display: flex;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  a {
+    background-color: #e7e7e7;
+    cursor: pointer;
+    padding: 10px;
+    text-transform: capitalize;
+  }
+}

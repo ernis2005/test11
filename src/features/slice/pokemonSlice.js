@@ -6,10 +6,34 @@ const initialState = {
   pokemons: [],
   pokemon: {},
   types: [],
+  searchPokemons: [],
   status: null,
   error: null,
 };
 
+export const getPokemonsByType = createAsyncThunk(
+  'pokemon/getPokemonsByType',
+  async typeName => {
+    const response = await axios.get(
+      `${Api}type/${typeName.type}?limit=${typeName.limit}&offset=${typeName.offset}`,
+    );
+    const pokemons = response.data.pokemon.map(p => p.pokemon);
+
+    const detailedPokemons = await Promise.all(
+      pokemons.map(async pokemon => {
+        const details = await axios.get(pokemon.url);
+        return {
+          id: details.data.id,
+          name: details.data.name,
+          avatar: details.data.sprites.front_default,
+          types: details.data.types.map(typeInfo => typeInfo.type.name),
+          url: pokemon.url,
+        };
+      }),
+    );
+    return detailedPokemons;
+  },
+);
 export const getPokemons = createAsyncThunk(
   'pokemon/getPokemons',
   async pageIndex => {
@@ -31,6 +55,7 @@ export const getPokemons = createAsyncThunk(
     return pokemonData;
   },
 );
+
 export const getTypes = createAsyncThunk('pokemon/getTypes', async () => {
   const response = await axios.get(`${Api}type`);
   return response.data.results;
@@ -43,6 +68,7 @@ export const getPokemonsById = createAsyncThunk(
     return response.data;
   },
 );
+
 export const pokemonSlice = createSlice({
   name: 'pokemon',
   initialState,
@@ -83,6 +109,18 @@ export const pokemonSlice = createSlice({
         state.pokemon = action.payload;
       })
       .addCase(getPokemonsById.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.error.message;
+      });
+    builder
+      .addCase(getPokemonsByType.pending, state => {
+        state.status = 'loading';
+      })
+      .addCase(getPokemonsByType.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.pokemons = action.payload;
+      })
+      .addCase(getPokemonsByType.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
       });

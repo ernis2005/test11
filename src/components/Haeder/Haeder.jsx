@@ -8,7 +8,7 @@ function Haeder() {
         <img src="https://raw.githubusercontent.com/PokeAPI/media/master/logo/pokeapi_256.png" />
       </NavLink>
       <div className={s.Search}>
-        <input type="text" placeholder="Search" />
+        <NavLink to={'/search'}>search</NavLink>
       </div>
     </div>
   );

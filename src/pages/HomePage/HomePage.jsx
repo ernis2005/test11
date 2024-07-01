@@ -1,8 +1,12 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import s from './page.module.scss';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPokemons, getTypes } from '../../features/slice/pokemonSlice';
+import {
+  getPokemons,
+  getPokemonsByType,
+  getTypes,
+} from '../../features/slice/pokemonSlice';
 import Loader from '../../components/Loader/Loader';
 import Card from '../../components/Card/Card';
 import cm from 'classnames';
@@ -15,6 +19,7 @@ const HomePage = () => {
   console.log(types, 'test');
   const [offset, setOffset] = React.useState(0);
   const [limit, setlimit] = React.useState(20);
+  const [typeFilter, setTypeFilter] = useState(null);
 
   useEffect(() => {
     const data = {
@@ -24,22 +29,43 @@ const HomePage = () => {
     dispatch(getPokemons(data));
     dispatch(getTypes());
   }, []);
+
   useEffect(() => {
+    if (typeFilter == null) return;
     const data = {
       limit,
       offset,
+      type: typeFilter,
     };
-    dispatch(getPokemons(data));
+    dispatch(getPokemonsByType(data));
+  }, [typeFilter]);
+  useEffect(() => {
+    if (typeFilter == null) {
+      const data = {
+        limit,
+        offset,
+      };
+      dispatch(getPokemons(data));
+    } else {
+      const data = {
+        limit,
+        offset,
+        type: typeFilter,
+      };
+      dispatch(getPokemonsByType(data));
+    }
   }, [limit, offset]);
   console.log(pokemons);
+
   const handleLimit = e => {
-    if (e == limit) {
-      alert('limit already selected');
-      return;
-    } else {
-      setlimit(e);
-      setOffset(0);
-    }
+    if (e == limit) return;
+    setlimit(e);
+    setOffset(0);
+  };
+  const handleTypeFilter = e => {
+    if (e == typeFilter) return;
+    setTypeFilter(e);
+    setOffset(0);
   };
   if (status === 'loading') {
     return <Loader />;
@@ -70,18 +96,41 @@ const HomePage = () => {
             </li>
           </ul>
         </div>
+        <div className={s.FilterType}>
+          <ul className={s.FilterLimitList}>
+            {types &&
+              types.map((type, index) => (
+                <li
+                  onClick={() => handleTypeFilter(type.name)}
+                  className={cm({ activeType: typeFilter == type.name })}
+                  key={index}
+                >
+                  {type.name}
+                </li>
+              ))}
+          </ul>
+        </div>
+
         <div className={s.Cards}>
-          {pokemons &&
+          {pokemons.length > 0 ? (
             pokemons.map((pokemon, index) => (
               <Card key={index} data={pokemon} />
-            ))}
+            ))
+          ) : (
+            <p> не найдено</p>
+          )}
         </div>
         <div className={s.BlockButtonList}>
           <button disabled={offset === 0} onClick={() => setOffset(offset - 1)}>
             -
           </button>
           <button>{offset + 1}</button>
-          <button onClick={() => setOffset(offset + 1)}>+</button>
+          <button
+            disabled={pokemons.length < limit}
+            onClick={() => setOffset(offset + 1)}
+          >
+            +
+          </button>
         </div>
       </div>
     );

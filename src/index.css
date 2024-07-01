@@ -30,3 +30,9 @@ a {
   color: #fff !important;
   border: none !important;
 }
+
+.activeType {
+  background-color: #000 !important;
+  color: #fff !important;
+  border: none !important;
+}
